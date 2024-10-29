@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualização do Banco de Dados</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Visualização do Banco de Dados</h1>
+
+    <h2>Usuários</h2>
+    <table id="usuariosTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Os dados dos usuários serão inseridos aqui -->
+        </tbody>
+    </table>
+
+    <h2>Projetos</h2>
+    <table id="projetosTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Data de Criação</th>
+                <th>Status</th>
+                <th>ID do Usuário</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Os dados dos projetos serão inseridos aqui -->
+        </tbody>
+    </table>
+
+    <h2>Tarefas</h2>
+    <table id="tarefasTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Descrição</th>
+                <th>Status</th>
+                <th>Data de Conclusão</th>
+                <th>ID do Projeto</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Os dados das tarefas serão inseridos aqui -->
+        </tbody>
+    </table>
+
+    <script>
+        // Função para carregar os dados do localStorage e preencher as tabelas
+        function loadData() {
+            // Carregando dados de usuários
+            const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+            const usuariosTable = document.getElementById('usuariosTable').getElementsByTagName('tbody')[0];
+            usuarios.forEach((usuario, index) => {
+                const row = usuariosTable.insertRow();
+                row.insertCell(0).textContent = index + 1; // ID gerado automaticamente
+                row.insertCell(1).textContent = usuario.name;
+                row.insertCell(2).textContent = usuario.email;
+            });
+
+            // Carregando dados de projetos
+            const projetos = JSON.parse(localStorage.getItem('projects')) || [];
+            const projetosTable = document.getElementById('projetosTable').getElementsByTagName('tbody')[0];
+            projetos.forEach((projeto, index) => {
+                const row = projetosTable.insertRow();
+                row.insertCell(0).textContent = index + 1; // ID gerado automaticamente
+                row.insertCell(1).textContent = projeto.name;
+                row.insertCell(2).textContent = projeto.date;
+                row.insertCell(3).textContent = projeto.completed ? 'Concluído' : 'Em Andamento';
+                row.insertCell(4).textContent = ''; // Aqui você pode adicionar o ID do usuário se necessário
+            });
+
+            // Carregando dados de tarefas
+            const tarefas = JSON.parse(localStorage.getItem('tasks')) || [];
+            const tarefasTable = document.getElementById('tarefasTable').getElementsByTagName('tbody')[0];
+            tarefas.forEach((tarefa, index) => {
+                const row = tarefasTable.insertRow();
+                row.insertCell(0).textContent = index + 1; // ID gerado automaticamente
+                row.insertCell(1).textContent = tarefa.description;
+                row.insertCell(2).textContent = ' Em Andamento'; // Status das tarefas
+                row.insertCell(3).textContent = ''; // Data de conclusão
+                row.insertCell(4).textContent = tarefa.project; // ID do projeto
+            });
+        }
+
+        
+        window.onload = loadData;
+    </script>
+
+</body>
+</html>

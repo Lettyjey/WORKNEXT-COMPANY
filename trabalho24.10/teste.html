@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Gerente de Projetos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('image/fundo1.png');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container, .cadastro-container {
+            width: 350px; 
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        h2, h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input, textarea {
+            width: 90%; 
+            padding: 8px; 
+            margin: 8px 0; 
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 95%;
+            padding: 10px;
+            background-color: #f0ad4e; /* Mudança para laranja */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #ec971f;
+        }
+
+        .login-footer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .login-footer a {
+            color: black;
+            text-decoration: none;
+            margin: 5px 0;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .main-container {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .main-square {
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.671);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            width: 80%; /* Ajustado para um tamanho médio */
+            height: auto;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .main-buttons-container {
+            display: flex; /* Exibe os botões na horizontal */
+            justify-content: space-around; /* Distribui os botões com espaço entre eles */
+            margin-bottom: 30px;
+            gap: 20px; /* Aumenta o espaço entre os botões */
+        }
+
+        .main-button {
+            width: 150px; /* Tamanho ajustado */
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0ad4e; /* Mudança para laranja */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .logout-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none; /* Remove default button styling */
+            border: none; /* Remove border */
+            cursor: pointer; /* Change cursor to pointer */
+        }
+
+        .logout-button img {
+            width: 25px; /* Tamanho da imagem do botão */
+            height: 25px; /* Tamanho da imagem do botão */
+        }
+
+        .add-project-button {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color : #f0ad4e; /* Mudança para laranja */
+            color: white;
+            border: none;
+            font-size: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0 , 0.3);
+            cursor: pointer;
+        }
+
+        .section {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .back-button {
+            width: auto;
+            padding: 10px;
+            background-color: #f0ad4e; /* Mudança para laranja */
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        .message {
+            color: green;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .project-card {
+            width: 250px;
+            height: 150px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px;
+            display: inline-block;
+        }
+
+        .project-card h4 {
+            margin-top: 0;
+        }
+
+        .project-actions {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .project-actions button {
+            width: 100px;
+            margin: 5px;
+        }
+
+        .login-image {
+            width: 100px;
+            height: 100px;
+            margin: 20px auto;
+            display: block;
+        }
+    </style>
+    <script>
+        function login() {
+            document.querySelector('.login-container').classList.add('hidden');
+            document.querySelector('.main-container').classList.remove('hidden');
+            document.querySelector('.main-container').style.display = "flex";
+            updateProjectsList();
+        }
+
+        function showCadastro() {
+            document.querySelector('.cadastro-container').classList.remove('hidden');
+            document.querySelector('.login-container').classList.add('hidden');
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(div => div.style.display = 'none');
+            const selectedSection = document.getElementById(sectionId);
+            selectedSection.style.display = 'flex';
+        }
+
+        function goToMain() {
+            document.querySelectorAll('.section').forEach(div => div.style.display = 'none');
+            document.querySelector('.main-square').style.display = 'flex';
+        }
+
+        function createTeam() {
+            const teamName = document.querySelector('#team-name').value;
+            const teamMembers = document.querySelector('#team-members').value;
+            const teamProfession = document.querySelector('#team-profession').value;
+            if (teamName && teamMembers && teamProfession) {
+                const teams = JSON.parse(localStorage.getItem('teams')) || [];
+                teams.push({ name: teamName, members: teamMembers, profession: teamProfession });
+                localStorage.setItem('teams', JSON.stringify(teams));
+
+                alert(`Equipe "${teamName}" criada com sucesso!`);
+                document.querySelector('#team-name').value = '';
+                document.querySelector('#team-members').value = '';
+                document.querySelector('#team-profession').value = '';
+                updateTeamSelect();
+            } else {
+                alert('Por favor, preencha todos os campos.');
+            }
+        }
+
+        function createTask() {
+            const taskDescription = document.querySelector('#task-description').value;
+            if (taskDescription) {
+                const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+                tasks.push({ description: taskDescription });
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+
+                alert("Tarefa criada com sucesso!");
+                document.querySelector('#task-description').value = '';
+                updateTasksList();
+            } else {
+                alert('Por favor, preencha a descrição da tarefa.');
+            }
+        }
+
+        function updateTeamSelect() {
+            const teamSelect = document.getElementById('team-select');
+            teamSelect.innerHTML = '<option value="" selected disabled>Selecionar Equipe</option>';
+            const teams = JSON.parse(localStorage.getItem('teams')) || [];
+            
+            teams.forEach(team => {
+                const option = document.createElement('option');
+                option.value = team.name;
+                option.textContent = team.name;
+                teamSelect.appendChild(option);
+            });
+        }
+
+        function showNovoProjeto() {
+            showSection('novo-projeto');
+            updateTeamSelect();
+        }
+
+        function createProject() {
+            const projectName = document.getElementById('project-name').value;
+            const projectDate = document.getElementById('project-date').value;
+            const projectDocuments = document.getElementById('project-documents').value;
+            const teamName = document.getElementById('team-select').value;
+
+            if (projectName && projectDate && projectDocuments && teamName) {
+                const projects = JSON.parse(localStorage.getItem(' projects')) || [];
+                projects.push({
+                    name: projectName,
+                    date: projectDate,
+                    documents: projectDocuments,
+                    team: teamName,
+                    completed: false
+                });
+                localStorage.setItem('projects', JSON.stringify(projects));
+
+                alert(`Projeto "${projectName}" criado com sucesso!`);
+                updateProjectsList();
+                document.getElementById('project-form').reset();
+            } else {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+            }
+        }
+
+        function updateProjectsList() {
+            const projectsContainer = document.getElementById('projetos-andamento-list');
+            projectsContainer.innerHTML = '<h3>Projetos em Andamento</h3>';
+            const projects = JSON.parse(localStorage.getItem('projects')) || [];
+            const ongoingProjects = projects.filter(project => !project.completed);
+
+            if (ongoingProjects.length === 0) {
+                projectsContainer.innerHTML += '<p>Nenhum projeto em andamento.</p>';
+            } else {
+                ongoingProjects.forEach(project => {
+                    const projectCard = document.createElement('div');
+                    projectCard.classList.add('project-card');
+                    projectCard.innerHTML = `
+                        <h4>${project.name}</h4>
+                        <p>Data: ${project.date}</p>
+                        <p>Documentos: ${project.documents}</p>
+                        <p>Equipe: ${project.team}</p>
+                        <div class="project-actions">
+                            <button onclick="viewProject('${project.name}')">Visualizar</button>
+                            <button onclick="editProject('${project.name}')">Editar</button>
+                            <button onclick="deleteProject('${project.name}')">Excluir</button>
+                            <button onclick="completeProject('${project.name}')">Concluir</button>
+                            <button onclick="leaveTask('${project.name}')">Deixar Tarefa</button>
+                        </div>
+                    `;
+                    projectsContainer.appendChild(projectCard);
+                });
+            }
+        }
+
+        function viewProject(projectName) {
+            const project = JSON.parse(localStorage.getItem('projects')).find(project => project.name === projectName);
+            alert(`Projeto: ${project.name}\nData: ${project.date}\nDocumentos: ${project.documents}\nEquipe: ${project.team}`);
+        }
+
+        function editProject(projectName) {
+            const project = JSON.parse(localStorage.getItem('projects')).find(project => project.name === projectName);
+            const projectNameInput = prompt('Digite o novo nome do projeto:', project.name);
+            const projectDateInput = prompt('Digite a nova data do projeto:', project.date);
+            const projectDocumentsInput = prompt('Digite os novos documentos do projeto:', project.documents);
+            const teamNameInput = prompt('Digite o novo nome da equipe do projeto:', project.team);
+
+            if (projectNameInput && projectDateInput && projectDocumentsInput && teamNameInput) {
+                const projects = JSON.parse(localStorage.getItem('projects'));
+                const projectIndex = projects.findIndex(project => project.name === projectName);
+                projects[projectIndex] = {
+                    name: projectNameInput,
+                    date: projectDateInput,
+                    documents: projectDocumentsInput,
+                    team: teamNameInput,
+                    completed: project.completed
+                };
+                localStorage.setItem('projects', JSON.stringify(projects));
+
+                alert(`Projeto "${projectNameInput}" editado com sucesso!`);
+                updateProjectsList();
+            } else {
+                alert('Por favor, preencha todos os campos.');
+            }
+        }
+
+        function deleteProject(projectName) {
+            const projects = JSON.parse(localStorage.getItem('projects'));
+            const projectIndex = projects.findIndex(project => project.name === projectName);
+            projects.splice(projectIndex, 1);
+            localStorage.setItem('projects', JSON.stringify(projects));
+
+            alert(`Projeto "${projectName}" excluído com sucesso!`);
+            updateProjectsList();
+        }
+
+        function completeProject(projectName) {
+            const projects = JSON.parse(localStorage.getItem('projects'));
+            const projectIndex = projects.findIndex(project => project.name === projectName);
+            projects[projectIndex].completed = true;
+            localStorage.setItem('projects', JSON.stringify(projects));
+
+            alert(`Projeto "${projectName}" concluído com sucesso!`);
+            updateProjectsList();
+        }
+
+        function leaveTask(projectName) {
+            const project = JSON.parse(localStorage.getItem('projects')).find(project => project.name === projectName);
+            const taskDescription = prompt('Digite a descrição da tarefa:', '');
+            if (taskDescription) {
+                const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+                tasks.push({ description: taskDescription, project: projectName });
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+
+                alert('Tarefa criada com sucesso!');
+                updateTasksList();
+            } else {
+                alert('Por favor, preencha a descrição da tarefa.');
+            }
+        }
+
+        function updateTasksList() {
+            const tasksContainer = document.getElementById('tasks-list');
+            tasksContainer.innerHTML = '<h3>Lista de Tarefas</h3>';
+            const tasks = JSON.parse(localStorage.getItem('tasks ')) || [];
+
+            if (tasks.length === 0) {
+                tasksContainer .innerHTML += '<p>Nenhuma tarefa criada.</p>';
+            } else {
+                tasks.forEach(task => {
+                    const taskDiv = document.createElement('div');
+                    taskDiv.innerHTML = `
+                        <p>Descrição: ${task.description}</p>
+                        <p>Projeto: ${task.project}</p>
+                    `;
+                    tasksContainer.appendChild(taskDiv);
+                });
+            }
+        }
+
+        function cadastrarUsuario() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (name && email && password) {
+                const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+                usuarios.push({ name, email, password });
+                localStorage.setItem('usuarios', JSON.stringify(usuarios));
+
+                alert(`Usuário "${name}" criado com sucesso!`);
+                document.getElementById('name').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+                document.querySelector('.cadastro-container').classList.add('hidden');
+                document.querySelector('.login-container').classList.remove('hidden');
+            } else {
+                alert('Por favor, preencha todos os campos.');
+            }
+        }
+
+        window.onload = function() {
+            updateTeamSelect();
+            updateProjectsList();
+            updateTasksList();
+        }
+    </script>
+</head>
+<body>
+
+    <!-- Tela de Login -->
+    <div class="login-container">
+        <h2>Login</h2>
+        <input type="text" placeholder="Email" required>
+        <input type="password" placeholder="Senha" required>
+        <button onclick="login()">Entrar</button>
+        <div class="login-footer">
+            <a href="#" onclick="showCadastro()">Cadastrar-se</a>
+            <a href="#">Esqueceu a senha?</a>
+        </div>
+    </div>
+
+    <!-- Tela de Cadastro -->
+    <div class="cadastro-container hidden">
+        <h2>Cadastro</h2>
+        <input type="text" id="name" placeholder="Nome" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Senha" required>
+        <button onclick="cadastrarUsuario()">Cadastrar</button>
+    </div>
+
+    <!-- Tela Principal -->
+    <div class="main-container">
+        <button class="logout-button" onclick="document.querySelector('.main-container').style.display = 'none'; document.querySelector('.login-container').classList.remove('hidden');"><img src="/image/sair.png" alt="Logout"></button>
+        <div class="main-square">
+            <div class="main-buttons-container">
+                <button class="main-button" onclick="showSection('cadastro-equipe')">Cadastro de Equipe</button>
+                <button class="main-button" onclick="showSection('lista-tarefas')">Lista de Tarefas</button>
+                <button class="main-button" onclick="showSection('projetos-concluidos')">Projetos Concluídos</button>
+            </div>
+            <div id="projetos-andamento-list"></div>
+            <button class="add-project-button" onclick="showNovoProjeto()">+</button>
+        </div>
+    </div>
+
+    <!-- Seção Cadastro de Equipe -->
+    <div class="section" id="cadastro-equipe">
+        <h3>Cadastro de Equipe</h3>
+        <div class="section-content">
+            <input type="text" id="team-name" placeholder="Nome da Equipe" required>
+            <input type="text" id="team-members" placeholder="Membros da Equipe" required>
+            <input type="text" id="team-profession" placeholder="Profissão da Equipe" required>
+            <button onclick="createTeam()">Criar Equipe</button>
+            <button class="back-button" onclick="goToMain()">Voltar</button>
+        </div>
+    </div>
+
+    <!-- Seção Lista de Tarefas -->
+    <div class="section" id="lista-tarefas">
+        <h3>Lista de Tarefas</h3>
+        <div class="section-content">
+            <input type="text " id="task-description" placeholder="Descrição da Tarefa" required>
+            <button onclick="createTask()">Criar Tarefa</button>
+            <div id="tasks-list"></div>
+            <button class="back-button" onclick="goToMain()">Voltar</button>
+        </div>
+    </div>
+
+    <!-- Seção Projetos Concluídos -->
+    <div class="section" id="projetos-concluidos">
+        <h 3>Projetos Concluídos</h3>
+        <div class="section-content">
+            <div id="concluded-projects"></div>
+            <button class="back-button" onclick="goToMain()">Voltar</button>
+        </div>
+    </div>
+
+    <!-- Seção Novo Projeto -->
+    <div class="section" id="novo-projeto">
+        <h3>Criar Novo Projeto</h3>
+        <div class="section-content">
+            <input type="text" id="project-name" placeholder="Nome do Projeto" required>
+            <input type="date" id="project-date" required>
+            <input type="text" id="project-documents" placeholder="Documentos" required>
+            <select id="team-select"></select>
+            <button onclick="createProject()">Criar Projeto</button>
+            <button class="back-button" onclick="goToMain()">Voltar</button>
+        </div>
+    </div>
+
+</body>
+</html>

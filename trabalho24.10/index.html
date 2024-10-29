@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Sistema de Gerenciamento de Projetos</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Sistema de Gerenciamento de Projetos</h1>
+        <div class="main-screen">
+            <div class="button-container">
+                <button class="main-button">Projetos Concluídos</button>
+                <button class="main-button">Lista de Tarefas</button>
+                <button class="main-button" id="cadastro-equipe">Cadastro de Equipe</button>
+                <button class="main-button" id="criar-projeto">Criar Projeto</button>
+                <button class="main-button" id="novo-projeto">+</button>
+            </div>
+            <div class="team-registration">
+                <h2>Cadastro de Equipe</h2>
+                <form id="team-form">
+                    <label for="team-name">Nome da Equipe:</label>
+                    <input type="text" id="team-name" required>
+                    <label for="team-profession">Profissão:</label>
+                    <input type="text" id="team-profession" required>
+                    <label for="team-type">Tipo:</label>
+                    <input type="text" id="team-type" required>
+                    <button type="submit">Adicionar Equipe</button>
+                </form>
+                <h3>Equipes Formadas</h3>
+                <table id="registered-teams">
+                    <tr>
+                        <th>Nome da Equipe</th>
+                        <th>Profissão</th>
+                        <th>Tipo</th>
+                    </tr>
+                </table>
+            </div>
+            <div class="new-project-form" style="display: none;">
+                <h2>Criar Novo Projeto</h2>
+                <form id="project-form">
+                    <label for="project-name">Nome do Projeto:</label>
+                    <input type="text" id="project-name" required>
+                    <label for="creation-date">Data de Criação:</label>
+                    <input type="date" id="creation-date" required>
+                    <label for="project-team">Equipe:</label>
+                    <input type="text" id="project-team" required>
+                    <button type="submit">Adicionar Projeto</button>
+                </form>
+            </div>
+            <div class="ongoing-projects">
+                <h2>Projetos em Andamento</h2>
+                <table id="ongoing-projects-table">
+                    <tr>
+                        <th>Nome do Projeto</th>
+                        <th>Data de Criação</th>
+                        <th>Equipe</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <button class="logout-icon">Sair</button>
+    </div>
+
+    <script>
+        document.getElementById('team-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const teamName = document.getElementById('team-name').value;
+            const profession = document.getElementById('team-profession').value;
+            const type = document.getElementById('team-type').value;
+
+            const table = document.getElementById('registered-teams');
+            const newRow = table.insertRow(-1);
+            newRow.innerHTML = `<td>${teamName}</td><td>${profession}</td><td>${type}</td>`;
+
+            // Limpa os campos do formulário
+            document.getElementById('team-form').reset();
+        });
+
+        document.getElementById('novo-projeto').addEventListener('click', function() {
+            const form = document.querySelector('.new-project-form');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        });
+
+        document.getElementById('project-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const projectName = document.getElementById('project-name').value;
+            const creationDate = document.getElementById('creation-date').value;
+            const projectTeam = document.getElementById('project-team').value;
+
+            const table = document.getElementById('ongoing-projects-table');
+            const newRow = table.insertRow(-1);
+            newRow.innerHTML = `<td>${projectName}</td><td>${creationDate}</td><td>${projectTeam}</td>`;
+
+            // Limpa os campos do formulário
+            document.getElementById('project-form').reset();
+            document.querySelector('.new-project-form').style.display = 'none'; // Esconde o formulário após adicionar
+        });
+    </script>
+</body>
+</html>
